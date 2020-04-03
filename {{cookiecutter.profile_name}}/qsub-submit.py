@@ -7,8 +7,8 @@ cluster parameters:
 
 + `threads`
 + `resources`
-    - `mem_mb`: Expected memory requirements in megabytes. Overrides
-      cluster.mem_mb
+    - `mem_gb`: Expected memory requirements in megabytes. Overrides
+      cluster.mem_gb
 """
 
 import os
@@ -43,10 +43,10 @@ def generate_resources_command(job: dict) -> str:
         thread_cmd = "-pe smp {threads}"
     else:
         thread_cmd = ""
-    mem_mb = resources.get("mem_mb", int({{cookiecutter.default_mem_mb}}))
-    mem_cmd = "-l s_vmem={mem_mb}M -l mem_req={mem_mb}M".format(mem_mb=mem_mb)
+    mem_gb = resources.get("mem_gb", int({{cookiecutter.default_mem_gb}}))
+    mem_cmd = "-l s_vmem={mem_gb}G -l mem_req={mem_gb}G".format(mem_gb=mem_gb)
     if (threads >= int({{cookiecutter.reserve_min_threads}}) or
-            mem_mb >= int({{cookiecutter.reserve_min_mem_mb}})):
+            mem_gb >= int({{cookiecutter.reserve_min_mem_gb}})):
         reserve_cmd = "-R yes"
     else:
         reserve_cmd = ""
@@ -83,7 +83,7 @@ jobscript = sys.argv[-1]
 job = read_job_properties(jobscript)
 
 # get command to do cluster command (no sync)
-submit_cmd = "qsub -terse -cwd"
+submit_cmd = "qsub -terse -cwd -V"
 
 # get queue part of command (if empty, don't put in anything)
 queue_cmd = "-q {queue}" if "{{cookiecutter.default_queue}}" else ""

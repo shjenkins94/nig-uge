@@ -40,6 +40,6 @@ Snakemake file:
 + `threads`: the number of threads needed for the job. If not specified,
   assumed to be 1.
 + `resources`
-    - `mem_mb`: the memory required for the rule in megabytes, which will be
+    - `mem_gb`: the memory required for the rule in gigabytes, which will be
       requested if present
 
