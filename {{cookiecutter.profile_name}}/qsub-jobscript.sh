@@ -6,9 +6,8 @@ echo "Running cluster job $JOB_ID"
 echo "-----------------------------"
 
 # run the job command
-{exec_job}
-# get the exit status
-EXIT_STATUS=${?}
+( {exec_job} )
+EXIT_STATUS=$?
 
 # print resource consumption
 echo "-----------------------------"
@@ -25,4 +24,3 @@ echo "$EXIT_STATUS" >> "$CLUSTER_DIR/$JOB_ID.exit"
 
 # exit with captured exit status
 exit $EXIT_STATUS
-

@@ -1,26 +1,19 @@
 #!/usr/bin/env python
 """
 qsub-status.py
-
 Formerly broad-status.py from github.com/broadinstitute/snakemake-broad-uger
-
 Obtains status for qsub job id
-
 Original license from Broad Institute
 MIT License
-
 Copyright (c) 2018 Broad Institute
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
-
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
-
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -82,11 +75,9 @@ def handle_hung_qstat(
         debug=False
 ):
     """ Kills job if hanging, returning True if it determined it was hung job
-
     Kills job if hanging. Determines that job is hanging by evaluating the
     cpu/walltime ratio -- if it below cpu_hung_max_ratio, considered hung.
     Only evaluates the ratio if wallclock has passed cpu_hung_min_time.
-
     Parameters
     ----------
     jobid: str
@@ -97,7 +88,6 @@ def handle_hung_qstat(
         Only kill job if the cpu/walltime is below this ratio
     debug: Optional[bool]
         If set, print additonal information to stderr
-
     Returns
     -------
     bool: True if was hung job and killed
@@ -127,18 +117,15 @@ def handle_hung_qstat(
 
 def qstat_status(jobid, debug=False):
     """ qstat to obtain job status, raises StatusCheckException if qstat fails
-
     Parameters
     ----------
     jobid: str
         The job being evaluated
-
     Returns
     -------
     str: status string (running, failed, success) (success not possible)
     debug: Optional[bool]
         If set, print additonal information to stderr
-
     Raises
     ------
     StatusCheckException if jobid not found by qstat
@@ -159,16 +146,13 @@ def qstat_status(jobid, debug=False):
 
 def cluster_dir_status(jobid):
     """ Checks `CLUSTER_DIR` for status
-
     Parameters
     ----------
     jobid: str
         The job being evaluated
-
     Returns
     -------
     str: status string (running, failed, success) (no running here)
-
     Raises
     ------
     StatusCheckException if jobid not found by this method
@@ -194,16 +178,13 @@ def cluster_dir_status(jobid):
 
 def qacct_status(jobid):
     """ Checks qacct for status
-
     Parameters
     ----------
     jobid: str
         The job being evaluated
-
     Returns
     -------
     str: status string (running, failed, success) (no running here)
-
     Raises
     ------
     StatusCheckException if jobid not found by this method
@@ -241,7 +222,6 @@ def missing_status(
         missing_job_wait=float({{cookiecutter.missing_job_wait}})
 ):
     """ Handles missing status
-
     Parameters
     ----------
     jobid: str
@@ -251,7 +231,6 @@ def missing_status(
     missing_job_wait: float
         The time elapsed in minutes before a missing job id will be evaluated
         by qacct. If qacct has a status exception, job is considered failed
-
     Returns
     -------
     str: status string (running, failed, success)
@@ -286,14 +265,12 @@ def missing_status(
 
 def check_status(jobid, debug=False):
     """ Uses qstat/local files/qacct to check for the status of given jobid
-
     Parameters
     ----------
     jobid: str
         The job being evaluated
     debug: Optional[bool]
         If set, print additonal information to stderr
-
     Returns
     -------
     str: status string (running, failed, success)
