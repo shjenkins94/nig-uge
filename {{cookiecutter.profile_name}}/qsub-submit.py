@@ -107,10 +107,34 @@ cmd = "{submit} {queue} {res} {log} {cluster} {jobscript}".format(
     jobscript=jobscript
 )
 
-try:
-    res = subprocess.run(cmd, check=True, shell=True, stdout=subprocess.PIPE)
-except subprocess.CalledProcessError as e:
-    raise e
+proc = subprocess.run(cmd, check=True, shell=True, encoding='utf-8',
+                      stdout=subprocess.PIPE)
 
-res = res.stdout.decode()
-print(res.strip())
+print(proc.stdout.strip())
+
+
+
+# proc = subprocess.run(command, stdout=subprocess.PIPE, check=True,
+#                       encoding='utf-8')
+# print(proc.stdout.strip())
+
+
+# # run commands
+# shell_stdout = shell(
+#     # qsub submit command
+#     submit_cmd
+#     # specify required threads/resources
+#     + " " + resources_cmd
+#     # specify job name, output/error logfiles
+#     + " " + jobinfo_cmd
+#     # specify queue
+#     + " " + queue_cmd
+#     # put in pass-through commands
+#     + " " + cluster_cmd
+#     # finally, the jobscript
+#     + " {jobscript}",
+#     read=True  # get byte string from stdout
+# )
+# 
+# # obtain job id from this, and print
+# print(shell_stdout.decode().strip())
