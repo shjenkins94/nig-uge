@@ -1,5 +1,5 @@
 {
-    "profile_name": "cluster-qsub"
+    "profile_name": "cluster-qsub",
     "latency_wait": 60,
     "use_conda": true,
     "use_singularity": true,
@@ -15,5 +15,5 @@
     "missing_job_wait": 1,
     "default_cluster_logdir": "cluster_logs",
     "default_queue": "",
-    "cluster_dir": ".cluster_status",
+    "cluster_dir": ".cluster_status"
 }
