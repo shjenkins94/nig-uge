@@ -13,8 +13,8 @@ cluster parameters:
 
 import os
 import re
-import sys  # for command-line arguments (get jobscript)
 import subprocess
+import sys  # for command-line arguments (get jobscript)
 from pathlib import Path  # for path manipulation
 from snakemake.utils import read_job_properties  # get info from jobscript
 from snakemake.shell import shell  # to run shell command nicely
