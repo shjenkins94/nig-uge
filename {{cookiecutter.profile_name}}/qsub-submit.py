@@ -17,6 +17,7 @@ import sys  # for command-line arguments (get jobscript)
 import subprocess
 from pathlib import Path  # for path manipulation
 from snakemake.utils import read_job_properties  # get info from jobscript
+from snakemake.shell import shell  # to run shell command nicely
 
 
 # Create a job name. Defaults to group name, then rule plus wildcards
@@ -107,34 +108,15 @@ cmd = "{submit} {queue} {res} {log} {cluster} {jobscript}".format(
     jobscript=jobscript
 )
 
-proc = subprocess.run(cmd, check=True, shell=True, encoding='utf-8',
-                      stdout=subprocess.PIPE)
 
-print(proc.stdout.strip())
-
-
-
-# proc = subprocess.run(command, stdout=subprocess.PIPE, check=True,
+# proc = subprocess.run(cmd, stdout=subprocess.PIPE, check=True,
 #                       encoding='utf-8')
 # print(proc.stdout.strip())
 
 
-# # run commands
-# shell_stdout = shell(
-#     # qsub submit command
-#     submit_cmd
-#     # specify required threads/resources
-#     + " " + resources_cmd
-#     # specify job name, output/error logfiles
-#     + " " + jobinfo_cmd
-#     # specify queue
-#     + " " + queue_cmd
-#     # put in pass-through commands
-#     + " " + cluster_cmd
-#     # finally, the jobscript
-#     + " {jobscript}",
-#     read=True  # get byte string from stdout
-# )
-# 
-# # obtain job id from this, and print
-# print(shell_stdout.decode().strip())
+# run commands
+# get byte string from stdout
+shell_stdout = shell(cmd, read=True)
+
+# obtain job id from this, and print
+print(shell_stdout.decode().strip())
