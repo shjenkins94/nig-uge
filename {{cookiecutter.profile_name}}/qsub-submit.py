@@ -84,7 +84,7 @@ jobscript = sys.argv[-1]
 job = read_job_properties(jobscript)
 
 # First part of qsub command (adds empty variable EXIT_STATUS)
-submit_cmd = 'qsub -terse -cwd -V -v EXIT_STATUS=""'
+submit_cmd = "qsub -terse -cwd -V"
 
 # get queue part of command (if empty, don't put in anything)
 queue_cmd = "-q {queue}" if "{{cookiecutter.default_queue}}" else ""
