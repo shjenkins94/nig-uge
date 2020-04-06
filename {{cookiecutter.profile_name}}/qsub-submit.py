@@ -83,8 +83,8 @@ jobscript = sys.argv[-1]
 # read the jobscript and get job properties
 job = read_job_properties(jobscript)
 
-# get command to do cluster command (no sync)
-submit_cmd = "qsub -terse -cwd -V"
+# First part of qsub command (adds empty variable EXIT_STATUS)
+submit_cmd = 'qsub -terse -cwd -V -v EXIT_STATUS=""'
 
 # get queue part of command (if empty, don't put in anything)
 queue_cmd = "-q {queue}" if "{{cookiecutter.default_queue}}" else ""
