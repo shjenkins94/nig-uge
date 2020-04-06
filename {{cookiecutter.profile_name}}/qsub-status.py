@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-qsub-status.py
+qsub-status.py (from https://github.com/jaicher/snakemake-qsub)
 Formerly broad-status.py from github.com/broadinstitute/snakemake-broad-uger
 Obtains status for qsub job id
 Original license from Broad Institute
