@@ -11,9 +11,6 @@ cluster parameters:
       cluster.mem_gb
 """
 
-import os
-import re
-import subprocess
 import sys  # for command-line arguments (get jobscript)
 from pathlib import Path  # for path manipulation
 from snakemake.utils import read_job_properties  # get info from jobscript
@@ -107,12 +104,6 @@ cmd = "{submit} {queue} {res} {log} {cluster} {jobscript}".format(
     cluster=cluster_cmd,
     jobscript=jobscript
 )
-
-
-# proc = subprocess.run(cmd, stdout=subprocess.PIPE, check=True,
-#                       encoding='utf-8')
-# print(proc.stdout.strip())
-
 
 # run commands
 # get byte string from stdout
