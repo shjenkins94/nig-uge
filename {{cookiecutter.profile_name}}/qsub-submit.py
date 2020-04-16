@@ -38,7 +38,7 @@ def generate_resources_command(job: dict) -> str:
     resources = job.get("resources", {})
     # start by requesting threads in smp if threads > 1
     if threads > 1:
-        thread_cmd = "-pe smp {threads}".format(threads=threads)
+        thread_cmd = "-pe mpi-fillup {threads}".format(threads=threads)
     else:
         thread_cmd = ""
     mem_gb = resources.get("mem_gb", int({{cookiecutter.default_mem_gb}}))
