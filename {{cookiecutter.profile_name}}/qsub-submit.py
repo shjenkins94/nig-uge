@@ -35,8 +35,9 @@ def get_job_name(job: dict) -> str:
 def generate_resources_command(job: dict) -> str:
     # get values
     threads = job.get("threads", 1)
+    params = job.get("params", {})
     resources = job.get("resources", {})
-    java_rule = resources.get("java_rule", False)
+    java_rule = params.get("java_rule", False)
     mem_gb = resources.get("mem_gb", int({{cookiecutter.default_mem_gb}}))
     # start by requesting threads in mpi if threads > 1
     thread_cmd = "-pe mpi-fillup {}".format(threads) if threads > 1 else ""
