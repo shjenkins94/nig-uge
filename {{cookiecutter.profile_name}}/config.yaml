@@ -4,9 +4,9 @@ use-singularity: "{{cookiecutter.use_singularity}}"
 keep-going: "{{cookiecutter.keep_going}}"
 restart-times: "{{cookiecutter.restart_times}}"
 printshellcmds: "{{cookiecutter.print_shell_commands}}"
-{%- if cookiecutter.directory != "" -%}
+{% if cookiecutter.directory != "" -%}
 directory: "{{cookiecutter.directory}}"
-{% endif %}
+{%- endif %}
 jobs: "{{cookiecutter.jobs}}"
 cluster: "qsub-submit.py"
 cluster-status: "qsub-status.py"
