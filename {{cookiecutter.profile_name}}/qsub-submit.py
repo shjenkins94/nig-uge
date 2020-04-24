@@ -46,16 +46,10 @@ def generate_resources_command(job: dict) -> str:
     java_cmd = "-v MALLOC_ARENA_MAX=2" if java_rule == 1 else ""
     # specifies the amount of memory the job requires.
     mem_cmd = "-l s_vmem={mem_gb}G -l mem_req={mem_gb}G".format(mem_gb=mem_gb)
-    if (threads >= int({{cookiecutter.reserve_min_threads}}) or
-            mem_gb >= int({{cookiecutter.reserve_min_mem_gb}})):
-        reserve_cmd = "-R yes"
-    else:
-        reserve_cmd = ""
-    res_cmd = "{java_cmd} {thread_cmd} {mem_cmd} {reserve_cmd}".format(
+    res_cmd = "{java_cmd} {thread_cmd} {mem_cmd}".format(
         java_cmd=java_cmd,
         thread_cmd=thread_cmd,
-        mem_cmd=mem_cmd,
-        reserve_cmd=reserve_cmd)
+        mem_cmd=mem_cmd)
     return (res_cmd)
 
 

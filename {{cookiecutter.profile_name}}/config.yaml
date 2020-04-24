@@ -1,4 +1,3 @@
-latency-wait: "{{cookiecutter.latency_wait}}"
 use-conda: "{{cookiecutter.use_conda}}"
 use-singularity: "{{cookiecutter.use_singularity}}"
 keep-going: "{{cookiecutter.keep_going}}"
@@ -7,6 +6,7 @@ printshellcmds: "{{cookiecutter.print_shell_commands}}"
 {% if cookiecutter.directory != "" -%}
 directory: "{{cookiecutter.directory}}"
 {%- endif -%}
+latency-wait: "{{cookiecutter.latency_wait}}"
 jobs: "{{cookiecutter.jobs}}"
 cluster: "qsub-submit.py"
 cluster-status: "qsub-status.py"

@@ -74,10 +74,10 @@ def handle_hung_qstat(
         cpu_hung_max_ratio=int({{cookiecutter.cpu_hung_max_ratio}}),
         debug=False
 ):
-    """ Kills job if hanging, returning True if it determined it was hung job
-    Kills job if hanging. Determines that job is hanging by evaluating the
-    cpu/walltime ratio -- if it below cpu_hung_max_ratio, considered hung.
-    Only evaluates the ratio if wallclock has passed cpu_hung_min_time.
+    """ If a job is hanging, it kills it and returns True. Determines if a job
+    is hanging by evaluating the cpu/walltime ratio -- if it's below
+    cpu_hung_max_ratio, the job is considered hung. Only evaluates the ratio if
+    the wallclock has passed cpu_hung_min_time.
     Parameters
     ----------
     jobid: str
