@@ -4,7 +4,7 @@
     "use_singularity": true,
     "keep_going": true,
     "restart_times": 0,
-    "print_shell_commands": false,
+    "print_shell_commands": true,
     "directory": "",
     "latency_wait": 60,
     "jobs": 100,
