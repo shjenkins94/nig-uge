@@ -1,7 +1,8 @@
 {
     "profile_name": "nig-uge",
     "use_conda": true,
-    "use_singularity": true,
+    "use_singularity": false,
+    "use_envmodules": false,
     "keep_going": true,
     "restart_times": 0,
     "print_shell_commands": true,
@@ -12,7 +13,7 @@
     "default_queue": "",
     "cpu_hung_min_time": 1,
     "cpu_hung_max_ratio": 0.01,
-    "missing_job_wait": 1,
+    "missing_job_wait": .1,
     "default_cluster_logdir": "cluster_logs",
     "cluster_dir": ".cluster_status"
 }

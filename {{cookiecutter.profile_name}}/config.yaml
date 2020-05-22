@@ -1,5 +1,6 @@
 use-conda: "{{cookiecutter.use_conda}}"
 use-singularity: "{{cookiecutter.use_singularity}}"
+use-envmodules: "{{cookiecutter.use_envmodules}}"
 keep-going: "{{cookiecutter.keep_going}}"
 restart-times: "{{cookiecutter.restart_times}}"
 printshellcmds: "{{cookiecutter.print_shell_commands}}"
