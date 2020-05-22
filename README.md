@@ -57,7 +57,7 @@ Snakemake file:
 + `resources`
     - `mem_gb`: the memory required for the rule in gigabytes, which will be
       requested if present
-    - `java_rule`: set to 1 for rules that use java. Prevents java from using too much memory.
+    - `use_java`: set to True for rules that use java. Prevents java from using too much memory.
     
 [qsub]: https://github.com/jaicher/snakemake-sync-bq-sub
 [broad]: https://github.com/broadinstitute/snakemake-broad-uger
