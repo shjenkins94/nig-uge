@@ -1,4 +1,5 @@
 # nig-uge
+[![Snakemake](https://img.shields.io/badge/snakemake-≥5.17-brightgreen.svg)](https://snakemake.bitbucket.io)
 
 Snakemake profile for running jobs on the NIG Supercomputer.  
 Derived from  
