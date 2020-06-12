@@ -22,14 +22,15 @@ cookiecutter --output-dir ~/.config/snakemake gh:shjenkins94/nig-uge
 
 After giving the profile a name, the following Snakemake parameters can be set:
 
+ - directory
+ - conda-prefix
+ - restart-times
  - use-conda
  - use-singularity
  - keep-going
- - restart-times
  - printshellcmds
- - directory
- - latency-wait
  - jobs
+ - latency-wait
 
 Along with parameters for cluster execution:
 
