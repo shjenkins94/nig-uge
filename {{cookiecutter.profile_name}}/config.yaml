@@ -1,14 +1,13 @@
 {%- if cookiecutter.directory != "" %}
 directory: "{{cookiecutter.directory}}"
 {%- endif %}
-{%- if cookiecutter.configfile != "" %}
-configfile: "{{cookiecutter.configfile}}"
+{%- if cookiecutter.conda_prefix != "" %}
+conda-prefix: "{{cookiecutter.conda_prefix}}"
 {%- endif %}
+restart-times: "{{cookiecutter.restart_times}}"
 use-conda: "{{cookiecutter.use_conda}}"
 use-singularity: "{{cookiecutter.use_singularity}}"
-use-envmodules: "{{cookiecutter.use_envmodules}}"
 keep-going: "{{cookiecutter.keep_going}}"
-restart-times: "{{cookiecutter.restart_times}}"
 printshellcmds: "{{cookiecutter.print_shell_commands}}"
 latency-wait: "{{cookiecutter.latency_wait}}"
 jobs: "{{cookiecutter.jobs}}"
