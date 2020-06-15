@@ -83,7 +83,7 @@ job = read_job_properties(jobscript)
 submit_cmd = "qsub -terse -cwd -V"
 
 # get queue part of command (if empty, don't put in anything)
-queue_cmd = "-q {{cookiecutter.default_queue}}" if "{{cookiecutter.default_queue}}" else ""
+queue_cmd = "-l {{cookiecutter.default_queue}}" if "{{cookiecutter.default_queue}}" else ""
 
 # get resources
 res_cmd = generate_resources_command(job)
