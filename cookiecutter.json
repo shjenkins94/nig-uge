@@ -1,7 +1,7 @@
 {
     "profile_name": "nig-uge",
     "directory": "",
-    "conda_prefix": "/home/shjenkins/envs/snakemake",
+    "conda_prefix": "/home/shjenkins94/envs/snakemake",
     "restart_times": 0,
     "default_mem_gb": 4,
     "use_conda": true,
