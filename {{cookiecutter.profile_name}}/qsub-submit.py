@@ -42,15 +42,20 @@ def generate_resources_command(job: dict) -> str:
     # start by requesting threads in mpi if threads > 1
     thread_cmd = "-pe mpi-fillup {}".format(threads) if threads > 1 else ""
     # gets vale of java_rule from resources and sets MALLOC_ARENA_MAX to 2 if
-    # java_rule = 1 (this stops rules that use Jave from requiring a large
-    # amount of memory)
+    # java_rule is true (this stops rules that use Java failing silently)
     java_cmd = "-v MALLOC_ARENA_MAX=2" if use_java else ""
     # specifies the amount of memory the job requires.
     mem_cmd = "-l s_vmem={mem_gb}G -l mem_req={mem_gb}G".format(mem_gb=mem_gb)
-    res_cmd = "{java_cmd} {thread_cmd} {mem_cmd}".format(
+    if (threads >= int({{cookiecutter.reserve_min_threads}}) or
+       mem_gb >= int({{cookiecutter.reserve_min_gb}})):
+        res_cmd = "-R y"
+    else:
+        res_cmd = ""
+    res_cmd = "{java_cmd} {thread_cmd} {mem_cmd} {res_cmd}".format(
         java_cmd=java_cmd,
         thread_cmd=thread_cmd,
-        mem_cmd=mem_cmd)
+        mem_cmd=mem_cmd,
+        res_cmd=res_cmd)
     return (res_cmd)
 
 
