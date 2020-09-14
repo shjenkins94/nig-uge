@@ -12,9 +12,9 @@ echo "=============================="
 ( {exec_job} )
 echo $? > {{cookiecutter.cluster_dir}}/$JOB_ID.exit #Store exit status in a file
 
+echo "-----------------------------"
 # print resource consumption
 qstat -j $JOB_ID | grep '^usage'
-
 # print exit status
 echo "-----------------------------"
 printf "Exit Status: " | cat - .cluster_status/$JOB_ID.exit

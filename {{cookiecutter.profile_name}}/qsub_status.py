@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """
-qsub-status.py (from https://github.com/jaicher/snakemake-qsub)
+qsub_status.py (from https://github.com/jaicher/snakemake-qsub).
+
 Formerly broad-status.py from github.com/broadinstitute/snakemake-broad-uger
 Obtains status for qsub job id
 Original license from Broad Institute
@@ -34,14 +35,12 @@ import time
 CLUSTER_DIR = Path("{{cookiecutter.cluster_dir}}")
 
 
-# define custom exception for status checks
 class StatusCheckException(Exception):
-    pass  # custom exception for when one way of checking status fails
+    """define custom exception for status checks."""
 
 
 def qstat_error(qstat_stdout):
-    """ Returns true if error state from qstat stdout, false otherwise
-    """
+    """Return true only if error state from qstat stdout."""
     state = ""
     for line in qstat_stdout.split("\n"):
         if line.startswith("job_state"):
@@ -53,8 +52,7 @@ def qstat_error(qstat_stdout):
 
 
 def extract_time(line, time_name):
-    """ Extracts time elapsed in seconds from usage line for given name
-    """
+    """Extract time elapsed in seconds from usage line for given name."""
     result = re.search(f"{time_name}=([^,]+)(,|$,\n)", line)
     if not result:
         return 0  # treat as zero seconds
@@ -74,10 +72,11 @@ def handle_hung_qstat(
         cpu_hung_max_ratio=int({{cookiecutter.cpu_hung_max_ratio}}),
         debug=False
 ):
-    """ If a job is hanging, it kills it and returns True. Determines if a job
-    is hanging by evaluating the cpu/walltime ratio -- if it's below
-    cpu_hung_max_ratio, the job is considered hung. Only evaluates the ratio if
-    the wallclock has passed cpu_hung_min_time.
+    """If a job is hanging, it kills it and returns True.
+
+    Determines if a job is hanging by evaluating the cpu/walltime ratio
+    -- job is considered hung if it's below cpu_hung_max_ratio.
+    Only evaluates the ratio if the wallclock has passed cpu_hung_min_time.
     Parameters
     ----------
     jobid: str
@@ -116,7 +115,9 @@ def handle_hung_qstat(
 
 
 def qstat_status(jobid, debug=False):
-    """ qstat to obtain job status, raises StatusCheckException if qstat fails
+    """Use qstat to obtain job status.
+
+    Raise StatusCheckException if qstat fails.
     Parameters
     ----------
     jobid: str
@@ -145,7 +146,8 @@ def qstat_status(jobid, debug=False):
 
 
 def cluster_dir_status(jobid):
-    """ Checks `CLUSTER_DIR` for status
+    """Check `CLUSTER_DIR` for status.
+
     Parameters
     ----------
     jobid: str
@@ -177,7 +179,8 @@ def cluster_dir_status(jobid):
 
 
 def qacct_status(jobid):
-    """ Checks qacct for status
+    """Check qacct for status.
+
     Parameters
     ----------
     jobid: str
@@ -221,7 +224,8 @@ def missing_status(
         jobid, reset=False,
         missing_job_wait=float({{cookiecutter.missing_job_wait}})
 ):
-    """ Handles missing status
+    """Handle missing status.
+
     Parameters
     ----------
     jobid: str
@@ -264,7 +268,8 @@ def missing_status(
 
 
 def check_status(jobid, debug=False):
-    """ Uses qstat/local files/qacct to check for the status of given jobid
+    """Use qstat/local files/qacct to check for the status of given jobid.
+
     Parameters
     ----------
     jobid: str
@@ -286,7 +291,6 @@ def check_status(jobid, debug=False):
     except StatusCheckException:
         if debug:
             print("qstat failed, keep going", file=sys.stderr)
-        pass
     # try checking cluster dir exit file
     try:
         status = cluster_dir_status(jobid)
@@ -298,7 +302,6 @@ def check_status(jobid, debug=False):
         # this check also failed, keep going
         if debug:
             print("exit file check failed, keep going", file=sys.stderr)
-        pass
     # treat as missing file for now -- if hits deadline, use qacct
     status = missing_status(jobid, reset=False)  # keep waiting or failed?
     # return final status
