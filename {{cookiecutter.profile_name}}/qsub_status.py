@@ -154,28 +154,27 @@ def cluster_dir_status(jobid):
         The job being evaluated
     Returns
     -------
-    str: status string (running, failed, success) (no running here)
-    Raises
+    str: status string (failed or success) (no running here)
     ------
-    StatusCheckException if jobid not found by this method
+    Raises StatusCheckException if jobid not found by this method
     """
     # get the potential exit file path
     exit_file_path = CLUSTER_DIR.joinpath(f"{jobid}.exit")
     # try to open the job exit file
     try:
-        exit_file = exit_file_path.open("r")
+        with open(exit_file_path, 'r') as exit_file:
+            # with opened file, parse exit status -- last line
+            exit_status = exit_file.readlines()[-1].strip()
+            # status is success or failed here
+            status = "success" if exit_status == "0" else "failed"
+            # delete exit file
+            try:
+                exit_file_path.unlink()
+            except FileNotFoundError:
+                pass  # okay that it has already been deleted
+            return status
     except FileNotFoundError:
         raise StatusCheckException(f"cluster_dir_status failed on job {jobid}")
-    # with opened file, parse exit status -- last line
-    exit_status = exit_file.readlines()[-1].strip()
-    # status is success or failed here
-    status = "success" if exit_status == "0" else "failed"
-    # delete exit file
-    try:
-        exit_file_path.unlink()
-    except FileNotFoundError:
-        pass  # okay that it has already been deleted
-    return status
 
 
 def qacct_status(jobid):

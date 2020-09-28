@@ -59,7 +59,7 @@ def generate_resources_command(job: dict) -> str:
 
 
 def get_log_files(job: dict) -> str:
-    """Generate the log file part of the command"""
+    """Generate the log file part of the command."""
     # get the name of the job
     jobname = get_job_name(job)
     # determine names to pass through for job name, logfiles
