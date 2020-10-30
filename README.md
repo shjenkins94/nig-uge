@@ -58,6 +58,7 @@ Snakemake file:
 + `resources`
     - `mem_gb`: the memory required for the rule in gigabytes, which will be
       requested if present
+    - `mpi`: If using mpi, set to the number of mpi processes to run
     - `use_java`: set to True for rules that use java. Prevents java from using too much memory.
     
 [qsub]: https://github.com/jaicher/snakemake-sync-bq-sub

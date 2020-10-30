@@ -67,7 +67,7 @@ def extract_time(line, time_name):
 
 
 def handle_hung_qstat(
-        jobid, qstat_stdout,
+        jid, qstat_stdout,
         cpu_hung_min_time=int({{cookiecutter.cpu_hung_min_time}}),
         cpu_hung_max_ratio=int({{cookiecutter.cpu_hung_max_ratio}}),
         debug=False
@@ -79,7 +79,8 @@ def handle_hung_qstat(
     Only evaluates the ratio if the wallclock has passed cpu_hung_min_time.
     Parameters
     ----------
-    jobid: str
+    jid: str
+        the job being evaluated
     qstat_stdout: str
     cpu_hung_min_time: int
         Only kill job if the walltime has passed this many minutes
@@ -103,9 +104,9 @@ def handle_hung_qstat(
             if (cpu / wallclock) < cpu_hung_max_ratio:
                 # hung job, so kill it
                 if debug:
-                    print(f"usage ratio low, killing...", file=sys.stderr)
+                    print(f"usage ratio low, killing {jid}", file=sys.stderr)
                 subprocess.run(
-                    ["qdel", jobid], encoding="utf-8",
+                    ["qdel", jid], encoding="utf-8",
                     stdout=subprocess.PIPE, stderr=subprocess.PIPE
                 )
                 return True  # we just killed the job
@@ -114,13 +115,13 @@ def handle_hung_qstat(
     return False  # we weren't able to get the ratio
 
 
-def qstat_status(jobid, debug=False):
+def qstat_status(jid, debug=False):
     """Use qstat to obtain job status.
 
     Raise StatusCheckException if qstat fails.
     Parameters
     ----------
-    jobid: str
+    jid: str
         The job being evaluated
     Returns
     -------
@@ -129,37 +130,37 @@ def qstat_status(jobid, debug=False):
         If set, print additonal information to stderr
     Raises
     ------
-    StatusCheckException if jobid not found by qstat
+    StatusCheckException if jid not found by qstat
     """
     # run qstat
     proc = subprocess.run(
-        ["qstat", "-j", jobid], encoding="utf-8",
+        ["qstat", "-j", jid], encoding="utf-8",
         stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
     if proc.returncode != 0:
         # qstat failed...
-        raise StatusCheckException(f"qstat failed on job {jobid}")
+        raise StatusCheckException(f"qstat failed on job {jid}")
     # otherwise kill job if CPU usage is too low
-    hung = handle_hung_qstat(jobid, proc.stdout, debug=debug)
+    hung = handle_hung_qstat(jid, proc.stdout, debug=debug)
     status = "failed" if hung or qstat_error(proc.stdout) else "running"
     return status
 
 
-def cluster_dir_status(jobid):
+def cluster_dir_status(jid):
     """Check `CLUSTER_DIR` for status.
 
     Parameters
     ----------
-    jobid: str
+    jid: str
         The job being evaluated
     Returns
     -------
     str: status string (failed or success) (no running here)
     ------
-    Raises StatusCheckException if jobid not found by this method
+    Raises StatusCheckException if jid not found by this method
     """
     # get the potential exit file path
-    exit_file_path = CLUSTER_DIR.joinpath(f"{jobid}.exit")
+    exit_file_path = CLUSTER_DIR.joinpath(f"{jid}.exit")
     # try to open the job exit file
     try:
         with open(exit_file_path, 'r') as exit_file:
@@ -174,30 +175,30 @@ def cluster_dir_status(jobid):
                 pass  # okay that it has already been deleted
             return status
     except FileNotFoundError:
-        raise StatusCheckException(f"cluster_dir_status failed on job {jobid}")
+        raise StatusCheckException(f"cluster_dir_status failed on job {jid}")
 
 
-def qacct_status(jobid):
+def qacct_status(jid):
     """Check qacct for status.
 
     Parameters
     ----------
-    jobid: str
+    jid: str
         The job being evaluated
     Returns
     -------
     str: status string (running, failed, success) (no running here)
     Raises
     ------
-    StatusCheckException if jobid not found by this method
+    StatusCheckException if jid not found by this method
     """
     proc = subprocess.run(
-        ["qacct", "-j", jobid], encoding="utf-8",
+        ["qacct", "-j", jid], encoding="utf-8",
         stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
     if proc.returncode != 0:
         # qacct failed...
-        raise StatusCheckException(f"qacct failed on job {jobid}")
+        raise StatusCheckException(f"qacct failed on job {jid}")
     # otherwise
     job_props = {}  # keep track of job properties
     # update job properties from stdout from qacct
@@ -219,15 +220,12 @@ def qacct_status(jobid):
     return status
 
 
-def missing_status(
-        jobid, reset=False,
-        missing_job_wait=float({{cookiecutter.missing_job_wait}})
-):
+def missing_status(jid, reset=False, missing_job_wait=float({{cookiecutter.missing_job_wait}})):
     """Handle missing status.
 
     Parameters
     ----------
-    jobid: str
+    jid: str
         The job being evaluated
     reset: bool
         If True, just delete the missing status file
@@ -239,7 +237,7 @@ def missing_status(
     str: status string (running, failed, success)
     """
     # what is the file we check?
-    p = CLUSTER_DIR.joinpath(f"{jobid}.missing")
+    p = CLUSTER_DIR.joinpath(f"{jid}.missing")
     # default status is running
     status = "running"
     # if not resetting, create file or check time elapsed...
@@ -252,7 +250,7 @@ def missing_status(
             time_elapsed = (time.time() - p.stat().st_mtime) / 60
             if time_elapsed > missing_job_wait:
                 try:
-                    status = qacct_status(jobid)
+                    status = qacct_status(jid)
                 except StatusCheckException:
                     # considered to be failed
                     status = "failed"
@@ -266,12 +264,12 @@ def missing_status(
     return status
 
 
-def check_status(jobid, debug=False):
-    """Use qstat/local files/qacct to check for the status of given jobid.
+def check_status(jid, debug=False):
+    """Use qstat/local files/qacct to check for the status of given jid.
 
     Parameters
     ----------
-    jobid: str
+    jid: str
         The job being evaluated
     debug: Optional[bool]
         If set, print additonal information to stderr
@@ -282,9 +280,9 @@ def check_status(jobid, debug=False):
     # check qstat
     try:
         # get qstat status
-        status = qstat_status(jobid, debug=debug)
+        status = qstat_status(jid, debug=debug)
         # reset missing job file (qstat worked, so not missing)
-        missing_status(jobid, reset=True)
+        missing_status(jid, reset=True)
         # return job status
         return status
     except StatusCheckException:
@@ -292,9 +290,9 @@ def check_status(jobid, debug=False):
             print("qstat failed, keep going", file=sys.stderr)
     # try checking cluster dir exit file
     try:
-        status = cluster_dir_status(jobid)
+        status = cluster_dir_status(jid)
         # reset missing job file (this check worked, so not missing)
-        missing_status(jobid, reset=True)
+        missing_status(jid, reset=True)
         # return job status
         return status
     except StatusCheckException:
@@ -302,7 +300,7 @@ def check_status(jobid, debug=False):
         if debug:
             print("exit file check failed, keep going", file=sys.stderr)
     # treat as missing file for now -- if hits deadline, use qacct
-    status = missing_status(jobid, reset=False)  # keep waiting or failed?
+    status = missing_status(jid, reset=False)  # keep waiting or failed?
     # return final status
     return status
 

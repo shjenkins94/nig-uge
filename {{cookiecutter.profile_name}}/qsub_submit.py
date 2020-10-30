@@ -8,6 +8,7 @@ parameters:
 + `threads`
 + `resources`
     - `mem_gb`: Expected memory requirements in gigabytes
+    - `mpi`: Number of mpi processes to use
     - `use_java`: Sets MALLOC_ARENA_MAX to 2 if true to avoid memory problems.
 """
 
@@ -33,28 +34,31 @@ def get_job_name(job: dict) -> str:
 
 def generate_resources_command(job: dict) -> str:
     """Get the resources part of the command."""
-    # get values from rule
-    threads = job.get("threads", 1)
+    # Get resource values from rule
+    threads = job.get("threads", False)
     resources = job.get("resources", {})
-    use_java = resources.get("use_java", False)
     mem_gb = resources.get("mem_gb", int({{cookiecutter.default_mem_gb}}))
-    # start by requesting threads in mpi if threads > 1
-    thread_cmd = "-pe mpi-fillup {}".format(threads) if threads > 1 else ""
-    # gets vale of java_rule from resources and sets MALLOC_ARENA_MAX to 2 if
-    # java_rule is true (this stops rules that use Java failing silently)
+    mpi_np = resources.get("mpi", False)
+    use_java = resources.get("use_java", False)
+
+    # Specify number of cpus if threads was specified
+    thread_cmd = "-l cpu={}".format(threads) if threads else ""
+    # Specify the amount of memory the job requires.
+    mem_cmd = "-l s_vmem={0}G -l mem_req={0}G".format(mem_gb)
+    # Specify number of mpi processes if mpi was specified
+    mpi_cmd = "-pe mpi-fillup {}".format(mpi_np) if mpi_np else ""
+    # If use_java is true, set MALLOC_ARENA_MAX to 2
+    # (this stops rules that use Java failing silently)
     java_cmd = "-v MALLOC_ARENA_MAX=2" if use_java else ""
-    # specifies the amount of memory the job requires.
-    mem_cmd = "-l s_vmem={mem_gb}G -l mem_req={mem_gb}G".format(mem_gb=mem_gb)
-    if (threads >= int({{cookiecutter.reserve_min_threads}}) or
-       mem_gb >= int({{cookiecutter.reserve_min_gb}})):
+    # Set reserve to yes if using mpi or more than the minimum reserve memory
+    if mpi_np or mem_gb >= int({{cookiecutter.reserve_min_gb}}):
         reserve_cmd = "-R y"
     else:
         reserve_cmd = ""
-    resource_cmd = "{java_cmd} {thread_cmd} {mem_cmd} {reserve_cmd}".format(
-        java_cmd=java_cmd,
-        thread_cmd=thread_cmd,
-        mem_cmd=mem_cmd,
-        reserve_cmd=reserve_cmd)
+    # Make list of resource commands, remove empty string, and join with spaces
+    res_cmds = [thread_cmd, java_cmd, mem_cmd, mpi_cmd, reserve_cmd]
+    res_cmds = list(filter(None, res_cmds))
+    resource_cmd = " ".join(res_cmds)
     return resource_cmd
 
 
@@ -88,10 +92,7 @@ job_props = read_job_properties(jobscript)
 SUBMIT_CMD = "qsub -terse -cwd -V"
 
 # get queue part of command (if empty, don't put in anything)
-if "{{cookiecutter.default_queue}}":
-    queue_cmd = "-l {{cookiecutter.default_queue}}"
-else:
-    queue_cmd = ""
+queue_cmd = "-l {{cookiecutter.default_queue}}" if "{{cookiecutter.default_queue}}" else ""
 
 # get resources
 res_cmd = generate_resources_command(job_props)
@@ -102,15 +103,11 @@ log_cmd = get_log_files(job_props)
 # get cluster commands to pass through, if any
 cluster_cmd = " ".join(sys.argv[1:-1])
 
+cmds = [SUBMIT_CMD, queue_cmd, res_cmd, log_cmd, cluster_cmd, jobscript]
+
+cmds = list(filter(None, cmds))
 # format command
-cmd = "{submit} {queue} {res} {log} {cluster} {jobscript}".format(
-    submit=SUBMIT_CMD,
-    queue=queue_cmd,
-    res=res_cmd,
-    log=log_cmd,
-    cluster=cluster_cmd,
-    jobscript=jobscript
-)
+cmd = " ".join(cmds)
 
 # run commands
 # get byte string from stdout
